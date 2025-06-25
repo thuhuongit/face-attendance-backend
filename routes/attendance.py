@@ -8,6 +8,25 @@ from utils.mail import send_email  # nếu bạn có hàm gửi mail
 
 attendance_bp = Blueprint("attendance_bp", __name__)
 
+# routes/attendance.py
+
+@attendance_bp.route('/api/attendance/logs', methods=['GET'])
+def get_attendance_logs():
+    logs = AttendanceLog.query.all()
+    return jsonify([
+        {
+            'id': log.id,
+            'user_id': log.user_id,
+            'user_name': log.user.full_name,
+            'check_in_time': log.check_in_time,
+            'check_out_time': log.check_out_time,
+            'salary': log.salary
+        }
+        for log in logs
+    ])
+
+
+#CheckIn
 @attendance_bp.route("/api/attendance/checkin", methods=["POST"])
 def check_in():
     data = request.get_json()
@@ -26,6 +45,8 @@ def check_in():
 
     return jsonify({"message": "Check-in thành công"})
 
+
+#Checkout
 @attendance_bp.route("/api/attendance/checkout", methods=["POST"])
 def check_out():
     data = request.get_json()

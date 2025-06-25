@@ -20,7 +20,9 @@ def create_user():
         email=data['email'],
         password=hashed_password,
         role=data.get('role', 'employee'),
-        avatar=data.get('avatar', '')
+        avatar=data.get('avatar', ''),
+        salary_rate = float(data.get('salary_rate', 0.0))
+
     )
     db.session.add(user)
     db.session.commit()

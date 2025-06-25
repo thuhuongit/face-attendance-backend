@@ -10,7 +10,9 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default='employee')  # admin / employee
     avatar = db.Column(db.String(255), default='')
+    salary_rate = db.Column(db.Float, default=0.0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
     def to_dict(self):
         return {
@@ -19,6 +21,7 @@ class User(db.Model):
             'email': self.email,
             'role': self.role,
             'avatar': self.avatar,
+            'salary_rate': self.salary_rate,
             'created_at': self.created_at.strftime("%Y-%m-%d %H:%M:%S")
         }
 
