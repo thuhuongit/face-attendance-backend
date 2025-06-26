@@ -1,11 +1,31 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
 from sqlalchemy.exc import IntegrityError
 from extensions import db
 from models import User
+from models import AttendanceLog
+
 
 user_bp = Blueprint('user_bp', __name__)
 
+
+
+@user_bp.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    user = User.query.filter_by(email=data['email']).first()
+
+    if not user or not check_password_hash(user.password, data['password']):
+        return jsonify({'message': 'Sai thông tin đăng nhập'}), 401
+
+    # Giả sử dùng JWT hoặc chỉ trả dữ liệu user (tuỳ mức độ bảo mật)
+    return jsonify({
+        'message': 'Đăng nhập thành công',
+        'user': user.to_dict(),
+        'token': 'dummy-token'  # hoặc dùng JWT thực
+    })
+ 
 # Lấy danh sách tất cả user
 @user_bp.route('/api/users', methods=['GET'])
 def get_users():
@@ -58,8 +78,11 @@ def update_user(user_id):
 def delete_user(user_id):
     user = User.query.get(user_id)
     if not user:
-        return jsonify({'message': 'User not found'}), 404
+        return jsonify({"message": "User not found"}), 404
+
+    # Xoá attendance logs trước
+    AttendanceLog.query.filter_by(user_id=user_id).delete()
 
     db.session.delete(user)
     db.session.commit()
-    return jsonify({'message': 'User deleted'})
+    return jsonify({"message": "User deleted"})
