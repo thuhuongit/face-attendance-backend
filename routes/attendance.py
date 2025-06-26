@@ -70,3 +70,27 @@ def check_out():
     send_email(log.user.email, "Check-out thành công", f"Bạn đã check-out lúc {log.check_out_time.strftime('%H:%M:%S')}. Lương tạm tính: {log.salary} VNĐ.")
 
     return jsonify({"message": "Check-out thành công", "salary": log.salary})
+
+
+@attendance_bp.route("/api/report", methods=["GET"])
+def get_salary_report():
+    users = User.query.all()
+
+    result = {}
+
+    for user in users:
+        total_hours = 0
+        total_salary = 0
+        logs = AttendanceLog.query.filter_by(user_id=user.id).all()
+        for log in logs:
+            if log.check_in_time and log.check_out_time:
+                duration = (log.check_out_time - log.check_in_time).total_seconds() / 3600
+                total_hours += duration
+                total_salary += log.salary or 0
+        result[user.full_name] = {
+            "total_hours": round(total_hours, 2),
+            "salary_per_hour": user.salary_rate,
+            "total_salary": round(total_salary, 2),
+        }
+
+    return jsonify(result)
