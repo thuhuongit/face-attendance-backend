@@ -86,3 +86,12 @@ def delete_user(user_id):
     db.session.delete(user)
     db.session.commit()
     return jsonify({"message": "User deleted"})
+
+
+# Lấy thông tin chi tiết user theo ID
+@user_bp.route('/api/users/<int:user_id>', methods=['GET'])
+def get_user_detail(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    return jsonify(user.to_dict())
