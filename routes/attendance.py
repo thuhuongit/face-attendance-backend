@@ -75,7 +75,6 @@ def check_out():
 @attendance_bp.route("/api/report", methods=["GET"])
 def get_salary_report():
     users = User.query.all()
-
     result = {}
 
     for user in users:
@@ -86,11 +85,33 @@ def get_salary_report():
             if log.check_in_time and log.check_out_time:
                 duration = (log.check_out_time - log.check_in_time).total_seconds() / 3600
                 total_hours += duration
-                total_salary += log.salary or 0
+                # Tính lương từng lần theo rate của user
+                salary_rate = user.salary_rate if user.salary_rate else 0
+                salary = round(duration * salary_rate, 2)
+                total_salary += salary
         result[user.full_name] = {
+            "employee_code": user.employee_code,
             "total_hours": round(total_hours, 2),
             "salary_per_hour": user.salary_rate,
             "total_salary": round(total_salary, 2),
         }
 
     return jsonify(result)
+
+#salary_rate lấy từ từng user, không dùng số cứng.
+#Tính lương từng lần: duration * salary_rate.
+#Tổng lương là tổng lương từng lần.
+#Có thể trả về thêm mã nhân viên (employee_code) để tiện tra cứu.
+#Nếu muốn trả về dạng mảng thay vì dict:
+
+#    report = []
+#    for user in users:
+#        # ...tính toán như trên...
+#        report.append({
+#            "full_name": user.full_name,
+#            "employee_code": user.employee_code,
+#            "total_hours": round(total_hours, 2),
+#            "salary_per_hour": user.salary_rate,
+#            "total_salary": round(total_salary, 2),
+#        })
+#    return jsonify(report)
