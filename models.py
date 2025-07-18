@@ -5,33 +5,35 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
+    employee_code = db.Column(db.String(50), default='')
     full_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+    phone = db.Column(db.String(20), default='')
     role = db.Column(db.String(20), default='employee')  # admin / employee
     avatar = db.Column(db.String(255), default='')
-    salary_rate = db.Column(db.Float, default=0.0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    employee_code = db.Column(db.String(50), default='')
     gender = db.Column(db.String(10), default='')
     dob = db.Column(db.Date, nullable=True)
     birth_place = db.Column(db.String(100), default='')
     status = db.Column(db.String(50), default='')
+    salary_rate = db.Column(db.Float, default=0.0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
         return {
             'id': self.id,
+            'employee_code': self.employee_code,
             'full_name': self.full_name,
             'email': self.email,
-            'role': self.role,
+            'phone': self.phone,
             'avatar': self.avatar,
-            'salary_rate': self.salary_rate,
-            'created_at': self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            'employee_code': self.employee_code,
             'gender': self.gender,
             'dob': self.dob.strftime("%Y-%m-%d") if self.dob else None,
             'birth_place': self.birth_place,
-            'status': self.status
+            'status': self.status,
+            'role': self.role,
+            'salary_rate': self.salary_rate,
+            'created_at': self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
         }
 
 class AttendanceLog(db.Model):

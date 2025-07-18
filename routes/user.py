@@ -45,6 +45,7 @@ def create_user():
             full_name=data['full_name'],
             email=data['email'],
             password=hashed_password,
+            phone=data.get('phone', ''),
             role=data.get('role', 'employee'),
             avatar=data.get('avatar', ''),
             salary_rate=float(data.get('salary_rate', 0.0)),
