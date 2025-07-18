@@ -12,7 +12,11 @@ class User(db.Model):
     avatar = db.Column(db.String(255), default='')
     salary_rate = db.Column(db.Float, default=0.0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+    employee_code = db.Column(db.String(50), default='')
+    gender = db.Column(db.String(10), default='')
+    dob = db.Column(db.Date, nullable=True)
+    birth_place = db.Column(db.String(100), default='')
+    status = db.Column(db.String(50), default='')
 
     def to_dict(self):
         return {
@@ -22,7 +26,12 @@ class User(db.Model):
             'role': self.role,
             'avatar': self.avatar,
             'salary_rate': self.salary_rate,
-            'created_at': self.created_at.strftime("%Y-%m-%d %H:%M:%S")
+            'created_at': self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            'employee_code': self.employee_code,
+            'gender': self.gender,
+            'dob': self.dob.strftime("%Y-%m-%d") if self.dob else None,
+            'birth_place': self.birth_place,
+            'status': self.status
         }
 
 class AttendanceLog(db.Model):

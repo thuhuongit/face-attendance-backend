@@ -1,3 +1,6 @@
+import os
+import time
+from flask import current_app
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
@@ -44,7 +47,12 @@ def create_user():
             password=hashed_password,
             role=data.get('role', 'employee'),
             avatar=data.get('avatar', ''),
-            salary_rate=float(data.get('salary_rate', 0.0))
+            salary_rate=float(data.get('salary_rate', 0.0)),
+            employee_code=data.get('employee_code', ''),
+            gender=data.get('gender', ''),
+            dob=data.get('dob', None),
+            birth_place=data.get('birth_place', ''),
+            status=data.get('status', '')
         )
         db.session.add(user)
         db.session.commit()
@@ -53,6 +61,20 @@ def create_user():
     except IntegrityError:
         db.session.rollback()
         return jsonify({'message': 'Email đã tồn tại!'}), 400
+    
+#Upload ảnh   
+@user_bp.route('/api/upload-avatar', methods=['POST'])
+def upload_avatar():
+    if 'avatar' not in request.files:
+        return jsonify({'message': 'No file part'}), 400
+    file = request.files['avatar']
+    if file.filename == '':
+        return jsonify({'message': 'No selected file'}), 400
+    filename = f"avatar_{int(time.time())}_{file.filename}"
+    filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+    url = f"/static/avatars/{filename}"  # hoặc đường dẫn public của bạn
+    return jsonify({'url': url})
 
 # Cập nhật user theo ID
 @user_bp.route('/api/users/<int:user_id>', methods=['PUT'])
